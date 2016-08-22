@@ -1,6 +1,7 @@
 import unittest
 from aliens import field_file_parser
 
+
 class TestOpening(unittest.TestCase):
 
     def test_opening_sets_indices(self):
@@ -12,6 +13,7 @@ class TestOpening(unittest.TestCase):
         opening_2 = field_file_parser.Opening([0,1])
         match = opening_1.matches_opening(opening_2)
         self.assertEquals([0,1], match.indices)
+
 
 class TestDashOpeningParser(unittest.TestCase):
     
@@ -33,11 +35,27 @@ class TestDashOpeningParser(unittest.TestCase):
         
         openings = parser.get_openings('xxxx')
         self.assertEqual(0, len(openings))
-        self.assertEqual([], openings.indices)
+        self.assertEqual([], openings)
 
 
+class TestFieldParser(unittest.TestCase):
 
-        
+    def test_init_sets_ifile_and_squares(self):
+        ifile = open('/dev/null')
+        file_parser = field_file_parser.FieldParser(ifile, field_file_parser.DashOpeningParser())
+        self.assertEqual(ifile, file_parser.ifile)
+        self.assertEqual([], file_parser.squares)
+
+    def test_get_biggest_square(self):
+        lines = [
+            'x---x',
+            'x---x',
+            'x---x'
+        ];
+        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+
+        self.assertEqual(9, file_parser.get_biggest_square())
+
 
 if __name__ == '__main__':
     unittest.main()

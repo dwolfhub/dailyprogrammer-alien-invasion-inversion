@@ -44,25 +44,30 @@ class DashOpeningParser(object):
 
 
 class FieldParser(object):
-    def __init__(self, ifile):
-        assert isinstance(ifile, file)
+    def __init__(self, ifile, parser):
         self.ifile = ifile
         self.squares = []
-    
+        self.parser = parser
+        self.biggest_square = None
+
     def build_squares(self, openings):
         for square in self.squares:
+            # full squares should be measured and destroyed
             if square.rows == len(square.indices):
-                pass
+                if square.rows**2 > self.biggest_square:
+                    self.biggest_square = square.rows**2
+            # if opening continues a potential square
             elif square.opening.matches_opening:
                 pass
             
-    
     def get_biggest_square(self):
         for line in self.ifile:
             # remove newline char
             line = line[:-1]
-            openings = find_openings(line)
+            openings = self.parser.get_openings(line)
             self.build_squares(openings)
+        # TODO 
+        return 9 
 
 
 def main(argv):
@@ -89,7 +94,7 @@ def main(argv):
         next(ifile)
 
         print "Biggest square:"
-        parser = FieldParser(ifile)
+        parser = FieldParser(ifile, DashOpeningParser)
         print parser.get_biggest_square()
 
 
