@@ -42,6 +42,25 @@ class DashOpeningParser(object):
 
         return openings
 
+class Square(object):
+    """
+    squares have an opening and a number of rows
+    """
+    def __init__(self, opening):
+        self.rows = 1
+        self.opening = opening
+
+    def size(self):
+        """
+        the size of a square is the lower of rows or indices length squared
+        """
+        square_size = self.rows**2
+        openings_len = len(self.opening.indices) 
+        if openings_len < self.rows:
+            square_size = openings_len**2
+
+        return square_size
+
 
 class FieldParser(object):
     def __init__(self, ifile, parser):
@@ -51,23 +70,40 @@ class FieldParser(object):
         self.biggest_square = None
 
     def build_squares(self, openings):
-        for square in self.squares:
-            # full squares should be measured and destroyed
-            if square.rows == len(square.indices):
-                if square.rows**2 > self.biggest_square:
-                    self.biggest_square = square.rows**2
-            # if opening continues a potential square
-            elif square.opening.matches_opening:
-                pass
+        new_squares = []
+        for opening in openings:
+            # see if opening continues a square
+            square_continued = False
+
+            for square in self.squares:
+                new_opening = square.opening.matches_opening(opening)
+                if new_opening:
+                    square.rows += 1
+
+                    if square.size() > self.biggest_square: 
+                        # record new biggest square
+                        self.biggest_square = square.size()
+                    
+                    square.opening = new_opening 
+                    new_squares.append(square)
+                    if len(square.opening.indices) == len(opening.indices):
+                        square_continued = True
+
+            # new square
+            if not square_continued:
+                new_squares.append(Square(opening))
+
+        self.squares = new_squares
             
     def get_biggest_square(self):
         for line in self.ifile:
             # remove newline char
             line = line[:-1]
             openings = self.parser.get_openings(line)
-            self.build_squares(openings)
-        # TODO 
-        return 9 
+            if len(openings):
+                self.build_squares(openings)
+
+        return self.biggest_square
 
 
 def main(argv):

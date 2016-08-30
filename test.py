@@ -38,6 +38,20 @@ class TestDashOpeningParser(unittest.TestCase):
         self.assertEqual([], openings)
 
 
+class TestSquare(unittest.TestCase):
+    def test_init_sets_instance_vars(self):
+        opening = field_file_parser.Opening([1,2,3])
+        square = field_file_parser.Square(opening)
+        self.assertEqual(1, square.rows)
+        self.assertEqual(opening, square.opening)
+
+    def test_size_rows_bigger(self):
+        opening = field_file_parser.Opening([1,2,3])
+        square = field_file_parser.Square(opening)
+        self.assertEqual(1, square.size())
+        square.rows = 9
+        self.assertEqual(9, square.size())
+
 class TestFieldParser(unittest.TestCase):
 
     def test_init_sets_ifile_and_squares(self):
@@ -50,8 +64,34 @@ class TestFieldParser(unittest.TestCase):
         lines = [
             'x---x',
             'x---x',
-            'x---x'
+            'x---x',
+            'x---x',
         ];
+        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+
+        self.assertEqual(9, file_parser.get_biggest_square())
+
+        lines = [
+            'x----x',
+            'xx---x',
+            '------',
+            '------',
+            '------',
+            '------',
+        ]
+        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+
+        self.assertEqual(16, file_parser.get_biggest_square())
+        
+        lines = [
+            '-------',
+            '---x---',
+            '---xx--',
+            '--xxx--',
+            '--xxx--',
+            'xxxxxxx',
+            'xxxxxxx',
+        ]
         file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
 
         self.assertEqual(9, file_parser.get_biggest_square())
