@@ -1,21 +1,21 @@
 import unittest
-from aliens import field_file_parser
+from aliens import field_parser 
 
 
 class TestOpening(unittest.TestCase):
 
     def test_opening_sets_indices(self):
-        opening = field_file_parser.Opening([0,1,2])
+        opening = field_parser.Opening([0,1,2])
         self.assertEqual([0,1,2], opening.indices)
     
     def test_matches_opening(self):
-        opening_1 = field_file_parser.Opening([0,1,2])
-        opening_2 = field_file_parser.Opening([0,1])
+        opening_1 = field_parser.Opening([0,1,2])
+        opening_2 = field_parser.Opening([0,1])
         match = opening_1.matches_opening(opening_2)
         self.assertEquals([0,1], match.indices)
 
-        opening_1 = field_file_parser.Opening([0,1])
-        opening_2 = field_file_parser.Opening([0,1,2])
+        opening_1 = field_parser.Opening([0,1])
+        opening_2 = field_parser.Opening([0,1,2])
         match = opening_1.matches_opening(opening_2)
         self.assertEqual([0,1], match.indices)
 
@@ -23,11 +23,11 @@ class TestOpening(unittest.TestCase):
 class TestDashOpeningParser(unittest.TestCase):
     
     def test_init_sets_opening_char(self):
-        parser = field_file_parser.DashOpeningParser()
+        parser = field_parser.DashOpeningParser()
         self.assertEqual('-', parser.opening_char)
 
     def test_get_openings_returns_array_of_openings(self):
-        parser = field_file_parser.DashOpeningParser()
+        parser = field_parser.DashOpeningParser()
         openings = parser.get_openings('---x--x----')
         self.assertEquals(3, len(openings))
         self.assertEqual([0,1,2], openings[0].indices)
@@ -45,14 +45,14 @@ class TestDashOpeningParser(unittest.TestCase):
 
 class TestSquare(unittest.TestCase):
     def test_init_sets_instance_vars(self):
-        opening = field_file_parser.Opening([1,2,3])
-        square = field_file_parser.Square(opening)
+        opening = field_parser.Opening([1,2,3])
+        square = field_parser.Square(opening)
         self.assertEqual(1, square.rows)
         self.assertEqual(opening, square.opening)
 
     def test_size_rows_bigger(self):
-        opening = field_file_parser.Opening([1,2,3])
-        square = field_file_parser.Square(opening)
+        opening = field_parser.Opening([1,2,3])
+        square = field_parser.Square(opening)
         self.assertEqual(1, square.size())
         square.rows = 9
         self.assertEqual(9, square.size())
@@ -61,9 +61,9 @@ class TestFieldParser(unittest.TestCase):
 
     def test_init_sets_ifile_and_squares(self):
         ifile = open('/dev/null')
-        file_parser = field_file_parser.FieldParser(ifile, field_file_parser.DashOpeningParser())
-        self.assertEqual(ifile, file_parser.ifile)
-        self.assertEqual([], file_parser.squares)
+        fp = field_parser.FieldParser(ifile, field_parser.DashOpeningParser())
+        self.assertEqual(ifile, fp.ifile)
+        self.assertEqual([], fp.squares)
 
     def test_get_biggest_square(self):
         lines = [
@@ -72,9 +72,9 @@ class TestFieldParser(unittest.TestCase):
             'x---x',
             'x---x',
         ];
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(9, file_parser.get_biggest_square())
+        self.assertEqual(9, fp.get_biggest_square())
 
         lines = [
             'x----x',
@@ -84,9 +84,9 @@ class TestFieldParser(unittest.TestCase):
             '------',
             '------',
         ]
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(16, file_parser.get_biggest_square())
+        self.assertEqual(16, fp.get_biggest_square())
         
         lines = [
             '-------',
@@ -97,9 +97,9 @@ class TestFieldParser(unittest.TestCase):
             'xxxxxxx',
             'xxxxxxx',
         ]
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(9, file_parser.get_biggest_square())
+        self.assertEqual(9, fp.get_biggest_square())
 
         lines = [
             '--------------X------X-----------X-X---X--X--X----X--------X--------------------X-------------------',
@@ -203,9 +203,9 @@ class TestFieldParser(unittest.TestCase):
             '-X-----------------------------------X-----X--------------------------------X-------XX--------------',
             '--X------------------------X-XX----------------X-------X-------X--------------X-----X-X------X---X--',
         ]
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(81, file_parser.get_biggest_square())
+        self.assertEqual(81, fp.get_biggest_square())
 
         lines = [
             '--X---------X----------------------X---XXX--------',
@@ -259,9 +259,9 @@ class TestFieldParser(unittest.TestCase):
             '--------X----------X---X--X-----X------X-----X----',
             '----------------------------------------------X---',
         ]
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(49, file_parser.get_biggest_square())
+        self.assertEqual(49, fp.get_biggest_square())
 
         lines = [
             'X--X-',
@@ -270,9 +270,9 @@ class TestFieldParser(unittest.TestCase):
             '-----',
             '---X-',
         ]
-        file_parser = field_file_parser.FieldParser(lines, field_file_parser.DashOpeningParser())
+        fp = field_parser.FieldParser(lines, field_parser.DashOpeningParser())
 
-        self.assertEqual(9, file_parser.get_biggest_square())
+        self.assertEqual(9, fp.get_biggest_square())
 
 
 if __name__ == '__main__':
