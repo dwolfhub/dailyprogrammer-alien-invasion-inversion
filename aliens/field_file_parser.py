@@ -40,6 +40,7 @@ class DashOpeningParser(object):
 
         return openings
 
+
 class Square(object):
     """
     squares have an opening and a number of rows
@@ -69,20 +70,22 @@ class FieldParser(object):
 
     def build_squares(self, openings):
         new_squares = []
+        # go through each opening
         for opening in openings:
             # see if opening continues a square
             square_continued = False
 
             for square in self.squares:
                 new_opening = square.opening.matches_opening(opening)
+                # if there is a match, continue the square and measure
                 if new_opening:
+                    square.opening = new_opening 
                     square.rows += 1
 
                     if square.size() > self.biggest_square: 
                         # record new biggest square
                         self.biggest_square = square.size()
                     
-                    square.opening = new_opening 
                     new_squares.append(square)
                     if len(square.opening.indices) == len(opening.indices):
                         square_continued = True
@@ -104,33 +107,3 @@ class FieldParser(object):
         return self.biggest_square
 
 
-def main(argv):
-    input_file = ''
-
-    try:
-        opts, args = getopt.getopt(
-            argv,
-            'hi:',
-            ['ifile=']
-        )
-    except getopt.GetoptError:
-        print 'aliens -i <inputfile>'
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt == '-h':
-            print 'aliens -i <inputfile>'
-        elif opt in ('-i', 'ifile'):
-            input_file = arg
-    
-    with open(input_file, 'r') as ifile:
-        # skip line 1
-        next(ifile)
-
-        print "Biggest square:"
-        parser = FieldParser(ifile, DashOpeningParser)
-        print parser.get_biggest_square()
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])

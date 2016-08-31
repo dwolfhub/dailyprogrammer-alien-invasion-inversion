@@ -14,6 +14,11 @@ class TestOpening(unittest.TestCase):
         match = opening_1.matches_opening(opening_2)
         self.assertEquals([0,1], match.indices)
 
+        opening_1 = field_file_parser.Opening([0,1])
+        opening_2 = field_file_parser.Opening([0,1,2])
+        match = opening_1.matches_opening(opening_2)
+        self.assertEqual([0,1], match.indices)
+
 
 class TestDashOpeningParser(unittest.TestCase):
     
